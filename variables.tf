@@ -23,22 +23,6 @@ EOT
     integration_runtime_name = optional(string)
     parameters               = optional(map(string))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.data_factory_linked_service_key_vaults : (
-        v.description == null || (length(v.description) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.data_factory_linked_service_key_vaults : (
-        v.integration_runtime_name == null || (length(v.integration_runtime_name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_data_factory_linked_service_key_vault's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
@@ -49,5 +33,15 @@ EOT
   #   source:    [from factories.ValidateFactoryID] !ok
   # path: data_factory_id
   #   source:    [from factories.ValidateFactoryID] err != nil
+  # path: key_vault_id
+  #   source:    [from validationFunctionForResourceID] !ok
+  # path: key_vault_id
+  #   source:    [from validationFunctionForResourceID] err != nil
+  # path: description
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: integration_runtime_name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
 }
 
